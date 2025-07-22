@@ -1,0 +1,84 @@
+# === Python Build / Bytecode ===
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.so
+*.dll
+*~ 
+
+# === Virtual Environments ===
+.venv/
+venv/
+ENV/
+env/
+*.env
+
+# === IDE / Editor Settings ===
+.vscode/
+.idea/
+*.sublime-workspace
+*.sublime-project
+*.code-workspace
+
+# === Jupyter Notebook Checkpoints ===
+.ipynb_checkpoints
+
+# === Logs & Runtime Files ===
+logs/
+*.log
+*.db
+*.sqlite
+nohup.out
+
+# === OS-specific Files ===
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# === Hugging Face Cache ===
+~/.cache/huggingface/
+*.safetensors
+*.bin
+*.pt
+
+# === Large files (models, embeddings, etc.) ===
+data/models/
+data/ckpts/
+*.ckpt
+*.weights
+*.tar.gz
+*.zip
+
+# === Output folders ===
+outputs/
+checkpoints/
+runs/
+wandb/
+
+# === Python environment ===
+pip-log.txt
+python-out.txt
+test-results/
+
+# === Lint / Coverage Reports ===
+.coverage
+htmlcov/
+.mypy_cache/
+.pytest_cache/
+.pytype/
+
+# === Dataset Cache ===
+data/.cache/
+*.parquet
+*.csv
+
+# === Docker / K8s Files ===
+*.pid
+docker-compose.override.yml
+
+# === Misc ===
+*.bak
+*.swp
+*.tmp
+*.orig
