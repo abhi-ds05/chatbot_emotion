@@ -51,10 +51,3 @@ class EmotionDetector:
             "scores": label_scores
         }
 
-
-# Example for testing
-if __name__ == "__main__":
-    detector = EmotionDetector()
-    text_input = "I'm really feeling relaxed and happy today!"
-    result = detector.detect_emotion(text_input)
-    print(result)
