@@ -5,7 +5,7 @@ __pycache__/
 *.pyd
 *.so
 *.dll
-*~ 
+*~
 
 # === Virtual Environments ===
 .venv/
@@ -13,6 +13,7 @@ venv/
 ENV/
 env/
 *.env
+.env.*
 
 # === IDE / Editor Settings ===
 .vscode/
@@ -22,7 +23,7 @@ env/
 *.code-workspace
 
 # === Jupyter Notebook Checkpoints ===
-.ipynb_checkpoints
+.ipynb_checkpoints/
 
 # === Logs & Runtime Files ===
 logs/
@@ -42,7 +43,7 @@ desktop.ini
 *.bin
 *.pt
 
-# === Large files (models, embeddings, etc.) ===
+# === Large Files & Datasets ===
 data/models/
 data/ckpts/
 *.ckpt
@@ -50,13 +51,20 @@ data/ckpts/
 *.tar.gz
 *.zip
 
+# MELD Dataset Specific (optional if you're not committing data)
+data/datasets/MELD/MELD.Raw.tar.gz
+data/datasets/MELD/MELD.Raw/*.tar
+data/datasets/MELD/MELD.Raw/train/
+data/datasets/MELD/MELD.Raw/dev/
+data/datasets/MELD/MELD.Raw/test/
+
 # === Output folders ===
 outputs/
 checkpoints/
 runs/
 wandb/
 
-# === Python environment ===
+# === Python Environment ===
 pip-log.txt
 python-out.txt
 test-results/
