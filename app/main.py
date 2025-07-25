@@ -1,22 +1,25 @@
+# app/main.py
+
 from fastapi import FastAPI
-from app.routes import router  # Import API routes
+from app.routes import router
 
-# Function to create and configure FastAPI app
 def create_app() -> FastAPI:
-    app = FastAPI(title="Emotion-Aware Chatbot")
-
-    # Include your router (from routes.py)
+    """
+    Creates and configures the FastAPI app.
+    """
+    app = FastAPI(
+        title="Emotion-Aware Multimodal Chatbot",
+        description="A chatbot capable of detecting emotion from text, audio, and images.",
+        version="1.0.0"
+    )
+    # Register your API routes from routes.py
     app.include_router(router)
-
-    # TODO: Add middleware (e.g., logging, CORS, error tracking) if needed
-
+    # If you use custom middleware, import and add here (optional)
     return app
 
-# Create the app instance
+# Instantiate the app for ASGI servers (uvicorn, etc.)
 app = create_app()
 
-# Optional: Run the app if this file is the script entry point
 if __name__ == "__main__":
     import uvicorn
-
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("app.main:app", host="0.0.0.0", port=8000, reload=True)
