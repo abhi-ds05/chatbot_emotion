@@ -57,6 +57,8 @@ data/datasets/MELD/MELD.Raw/*.tar
 data/datasets/MELD/MELD.Raw/train/
 data/datasets/MELD/MELD.Raw/dev/
 data/datasets/MELD/MELD.Raw/test/
+data/datasets/MELD/MELD.Raw/**/*.mp4
+data/datasets/MELD/MELD.Raw/**/*.tar.gz
 
 # === Output folders ===
 outputs/
