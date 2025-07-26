@@ -2,82 +2,59 @@
 
 from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
 import torch
-from typing import List, Optional
+from dotenv import load_dotenv
+import os
 
 class ChatbotEngine:
-    """
-    Emotion-aware chatbot engine that uses an open-source LLM.
-    """
-
     def __init__(
         self,
         model_name: str = "mistralai/Mistral-7B-Instruct-v0.2",
-        max_context_length: int = 2048,
-        device: Optional[str] = None
     ):
         """
-        Initialize the chatbot engine with a Hugging Face LLM pipeline.
-
-        Args:
-            model_name (str): The name of the local or remote Hugging Face model.
-            max_context_length (int): Max tokens to include in prompt.
-            device (str or None): 'cuda', 'cpu', or auto-detected.
+        Initializes the chatbot engine using a Hugging Face model and token.
+        The HF_TOKEN must be set in a .env file.
         """
-        self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
-        self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+        # Load .env environment variables
+        load_dotenv()
+        hf_token = os.getenv("HF_TOKEN")
+
+        if hf_token is None:
+            raise ValueError("HF_TOKEN not found in environment variables. Please set it in .env")
+
+        if not torch.cuda.is_available():
+            print("⚠️ Warning: CUDA is not available. Running this model on CPU may be very slow.")
+
+        # Load tokenizer and model with authentication token
+        self.tokenizer = AutoTokenizer.from_pretrained(
+            model_name,
+            use_auth_token=hf_token
+        )
         self.model = AutoModelForCausalLM.from_pretrained(
             model_name,
-            torch_dtype=torch.float16 if self.device == "cuda" else torch.float32,
-            device_map="auto" if self.device == "cuda" else None,
+            torch_dtype=torch.float16 if torch.cuda.is_available() else torch.float32,
+            device_map="auto",
+            use_auth_token=hf_token
         )
-        self.max_context_length = max_context_length
 
-    def build_prompt(self, chat_history: List[str], emotion: Optional[str] = None) -> str:
-        """
-        Build a conversational prompt including optional emotion context.
-
-        Args:
-            chat_history (List[str]): History of turns (user + bot).
-            emotion (str): Optional emotion tag to guide the model.
-
-        Returns:
-            str: The final prompt string.
-        """
-        preamble = (
-            f"The user is feeling {emotion}.\n"
-            if emotion else ""
+        # Create text generation pipeline
+        self.generator = pipeline(
+            "text-generation",
+            model=self.model,
+            tokenizer=self.tokenizer,
+            device=0 if torch.cuda.is_available() else -1
         )
-        chat_transcript = "\n".join(chat_history[-10:])  # Keep last 10 turns
-        return f"{preamble}Continue the conversation below:\n{chat_transcript}\nBot:"
 
-    def generate_response(self, chat_history: List[str], emotion: Optional[str] = None) -> str:
+    def generate(self, prompt: str, max_new_tokens: int = 128, **kwargs) -> str:
         """
-        Generate a response using the LLM.
-
-        Args:
-            chat_history (List[str]): User + bot messages so far.
-            emotion (str): Emotion category to condition response.
-
-        Returns:
-            str: Model-generated bot reply.
+        Generates a response to the given prompt using the language model.
         """
-        prompt = self.build_prompt(chat_history, emotion)
-        inputs = self.tokenizer(prompt, return_tensors="pt", truncation=True, max_length=self.max_context_length)
-        input_ids = inputs["input_ids"].to(self.model.device)
-
-        output_ids = self.model.generate(
-            input_ids,
-            max_new_tokens=150,
+        outputs = self.generator(
+            prompt,
+            max_new_tokens=max_new_tokens,
             do_sample=True,
-            temperature=0.7,
             top_p=0.9,
-            pad_token_id=self.tokenizer.eos_token_id
+            temperature=0.7,
+            **kwargs
         )
-        output_text = self.tokenizer.decode(output_ids[0], skip_special_tokens=True)
-
-        # Extract only the generated part after the last 'Bot:' marker
-        if "Bot:" in output_text:
-            return output_text.split("Bot:")[-1].strip()
-        else:
-            return output_text.strip()
-
+        # Remove prompt from output to return clean response
+        return outputs[0]["generated_text"].replace(prompt, "").strip()
